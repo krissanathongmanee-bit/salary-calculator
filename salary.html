@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Cute Calculator 🌸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Mali', cursive; background-color: #fff5f8; color: #5d4a4a; display: flex; justify-content: center; padding: 20px; }
+        .container { background-color: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 20px rgba(255, 182, 193, 0.3); max-width: 500px; width: 100%; }
+        h2 { text-align: center; color: #ff85a2; }
+        .section { border-bottom: 2px dashed #ffe0e9; margin-bottom: 20px; padding-bottom: 10px; }
+        .section-title { font-weight: bold; color: #ffb6c1; margin-bottom: 10px; }
+        label { display: block; margin: 10px 0 5px; font-size: 0.9em; }
+        input { width: 90%; padding: 10px; border: 2px solid #ffe0e9; border-radius: 12px; outline: none; }
+        button { width: 100%; padding: 15px; background-color: #ff85a2; color: white; border: none; border-radius: 15px; font-size: 1.1em; cursor: pointer; font-family: 'Mali', cursive; margin-top: 10px; }
+        button:hover { background-color: #ffb6c1; }
+        #result { margin-top: 20px; background-color: #fff9fa; padding: 20px; border-radius: 15px; display: none; }
+        .total { font-size: 1.4em; color: #ff4d7d; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🌸 คำนวณเงินเดือน 🌸</h2>
+    
+    <div class="section">
+        <label>💰 ฐานรายได้ต่อชั่วโมง (บาท)</label>
+        <input type="number" id="hourlyRate" value="50">
+    </div>
+
+    <div class="section">
+        <div class="section-title">📅 ส่วนที่ 1: วันทำงานปกติ</div>
+        <label>จำนวนวันที่มาทำงาน (จันทร์-ศุกร์)</label>
+        <input type="number" id="baseDays" placeholder="ระบุจำนวนวัน">
+    </div>
+
+    <div class="section">
+        <div class="section-title">📅 ส่วนที่ 2: OT & ค่ารถ</div>
+        <label>🚗 จำนวนวันที่เดินทางมาทำงาน (เพื่อคิดค่ารถ 35.-)</label>
+        <input type="number" id="transportDays" placeholder="รวมทุกวันที่เข้าบริษัท">
+
+        <label>⏰ OT วันธรรมดา (ชม. ที่เกิน 9 ชม.)</label>
+        <input type="number" id="weekdayOT" value="0">
+
+        <label>⏰ วันเสาร์ 9 ชม. แรก (ชม.)</label>
+        <input type="number" id="satNormal" value="0">
+        
+        <label>⏰ วันเสาร์ หลัง 9 ชม. (ชม. OT)</label>
+        <input type="number" id="satOT" value="0">
+
+        <label>⏰ นักขัตฤกษ์ 9 ชม. แรก (ชม.)</label>
+        <input type="number" id="holidayNormal" value="0">
+
+        <label>⏰ นักขัตฤกษ์ หลัง 9 ชม. (ชม. OT)</label>
+        <input type="number" id="holidayOT" value="0">
+    </div>
+
+    <button onclick="calculate()">คำนวณยอดสุทธิ ✨</button>
+
+    <div id="result">
+        <p>💵 ฐานเงินเดือนปกติ: <span id="resBase">0</span>.-</p>
+        <p>⛽ ค่ารถรวม: <span id="resTransport">0</span>.-</p>
+        <p>⚡ รายได้เสริม/OT: <span id="resOT">0</span>.-</p>
+        <hr>
+        <div class="total">ยอดรับสุทธิ: <span id="resTotal">0</span>.-</div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const rate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+        const baseDays = parseFloat(document.getElementById('baseDays').value) || 0;
+        const transDays = parseFloat(document.getElementById('transportDays').value) || 0;
+        
+        const wkOT = parseFloat(document.getElementById('weekdayOT').value) || 0;
+        const sNorm = parseFloat(document.getElementById('satNormal').value) || 0;
+        const sOT = parseFloat(document.getElementById('satOT').value) || 0;
+        const hNorm = parseFloat(document.getElementById('holidayNormal').value) || 0;
+        const hOT = parseFloat(document.getElementById('holidayOT').value) || 0;
+
+        // 1. ฐานเงินเดือน (คิดเฉพาะวันจันทร์-ศุกร์ วันละ 8 ชม.)
+        const baseSalary = baseDays * 8 * rate;
+
+        // 2. ค่ารถ
+        const transportPay = transDays * 35;
+
+        // 3. ค่า OT และค่าทำงานวันหยุด
+        const otPay = (wkOT * rate * 1.5) + 
+                      (sNorm * rate * 1) + 
+                      (sOT * rate * 3) + 
+                      (hNorm * rate * 2) + 
+                      (hOT * rate * 3);
+
+        const total = baseSalary + transportPay + otPay;
+
+        document.getElementById('resBase').innerText = baseSalary.toLocaleString();
+        document.getElementById('resTransport').innerText = transportPay.toLocaleString();
+        document.getElementById('resOT').innerText = otPay.toLocaleString();
+        document.getElementById('resTotal').innerText = total.toLocaleString();
+        document.getElementById('result').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
